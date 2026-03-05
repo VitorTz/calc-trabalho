@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Salário e Benefícios</title>
+    <style>
+        /* CSS Reset and base styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f7f9fc;
+            color: #333333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Main container styling - Minimalist, flat */
+        .calculator-container {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 420px;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            text-align: center;
+            color: #111827;
+        }
+
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 24px 0 16px 0;
+            color: #374151;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 8px;
+        }
+
+        /* Form groups and inputs */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        /* Display inputs in a row for related fields */
+        .input-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .input-row .form-group {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #4b5563;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 16px;
+            color: #1f2937;
+            background-color: #f9fafb;
+            transition: border-color 0.2s ease;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background-color: #ffffff;
+        }
+
+        /* Checkbox styling */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            padding: 12px;
+            background-color: #f9fafb;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .checkbox-group input {
+            width: 18px;
+            height: 18px;
+            margin-right: 12px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin-bottom: 0;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* Results section */
+        .results-section {
+            border-top: 1px solid #e5e7eb;
+            padding-top: 24px;
+            margin-top: 24px;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .result-row span strong {
+            font-weight: 600;
+        }
+
+        .result-row.discount {
+            color: #ef4444;
+        }
+
+        .result-row.benefit {
+            color: #3b82f6; /* Blue color to distinguish from salary */
+            font-weight: 500;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed #e5e7eb;
+        }
+
+        .result-row.total {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px dashed #e5e7eb;
+            font-size: 20px;
+            font-weight: 700;
+            color: #10b981;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calculator-container">
+        <h2>Cálculo de Salário</h2>
+
+        <div class="form-group">
+            <label for="baseSalary">Salário Base Bruto Mensal (R$)</label>
+            <input type="number" id="baseSalary" value="2056" step="0.01" min="0">
+        </div>
+
+        <div class="input-row">
+            <div class="form-group">
+                <label for="dailyRate">Valor do Dia (R$)</label>
+                <input type="number" id="dailyRate" step="0.01" min="0">
+            </div>
+            
+            <div class="form-group">
+                <label for="daysWorked">Dias Trabalhados</label>
+                <input type="number" id="daysWorked" value="30" min="1" max="31">
+            </div>
+        </div>
+
+        <div class="checkbox-group">
+            <input type="checkbox" id="hasAssiduity" checked>
+            <label for="hasAssiduity">Incluir Assiduidade (7%)</label>
+        </div>
+
+        <h3>Benefícios</h3>
+        <div class="input-row">
+            <div class="form-group">
+                <label for="vrValue">Valor do VR Diário (R$)</label>
+                <input type="number" id="vrValue" value="27.29" step="0.01" min="0">
+            </div>
+            
+            <div class="form-group">
+                <label for="vrDays">Dias de VR</label>
+                <input type="number" id="vrDays" value="26" min="0" max="31">
+            </div>
+        </div>
+
+        <div class="results-section">
+            <div class="result-row">
+                <span>Salário Proporcional:</span>
+                <span id="resProportional">R$ 0,00</span>
+            </div>
+            <div class="result-row">
+                <span>Assiduidade (+):</span>
+                <span id="resAssiduity">R$ 0,00</span>
+            </div>
+            <div class="result-row discount">
+                <span>Vale Transporte (<strong>6%</strong>):</span>
+                <span id="resVT">- R$ 0,00</span>
+            </div>
+            <div class="result-row discount">
+                <span>Desconto INSS (<strong id="lblINSSPerc">0.00%</strong>):</span>
+                <span id="resINSS">- R$ 0,00</span>
+            </div>
+            <div class="result-row total">
+                <span>Salário Líquido:</span>
+                <span id="resNetSalary">R$ 0,00</span>
+            </div>
+            <div class="result-row benefit">
+                <span>Total Vale Refeição:</span>
+                <span id="resVRTotal">R$ 0,00</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements selection - Salary
+        const inputBaseSalary = document.getElementById('baseSalary');
+        const inputDailyRate = document.getElementById('dailyRate');
+        const inputDaysWorked = document.getElementById('daysWorked');
+        const inputHasAssiduity = document.getElementById('hasAssiduity');
+        
+        // DOM Elements selection - Meal Voucher (VR)
+        const inputVRValue = document.getElementById('vrValue');
+        const inputVRDays = document.getElementById('vrDays');
+        
+        // DOM Elements selection - Results
+        const resProportional = document.getElementById('resProportional');
+        const resAssiduity = document.getElementById('resAssiduity');
+        const resVT = document.getElementById('resVT');
+        const resINSS = document.getElementById('resINSS');
+        const lblINSSPerc = document.getElementById('lblINSSPerc');
+        const resNetSalary = document.getElementById('resNetSalary');
+        const resVRTotal = document.getElementById('resVRTotal');
+
+        // Formats a number to Brazilian Real currency format
+        function formatCurrency(value) {
+            return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        // Calculates the progressive INSS tax
+        function calculateINSS(grossAmount) {
+            let inss = 0;
+            if (grossAmount > 0) {
+                inss += Math.max(0, Math.min(grossAmount, 1412) * 0.075);
+            }
+            if (grossAmount > 1412) {
+                inss += Math.max(0, Math.min(grossAmount - 1412, 1254.68) * 0.09);
+            }
+            if (grossAmount > 2666.68) {
+                inss += Math.max(0, Math.min(grossAmount - 2666.68, 1333.35) * 0.12);
+            }
+            if (grossAmount > 4000.03) {
+                inss += Math.max(0, Math.min(grossAmount - 4000.03, 3785.99) * 0.14);
+            }
+            return inss;
+        }
+
+        // Updates the Daily Rate input automatically when Base Salary changes
+        function updateDailyRateAuto() {
+            const baseSalary = parseFloat(inputBaseSalary.value) || 0;
+            inputDailyRate.value = (baseSalary / 30).toFixed(2);
+            calculateAll();
+        }
+
+        // Main calculation function for both Salary and Benefits
+        function calculateAll() {
+            // --- Salary Calculation ---
+            const dailyRate = parseFloat(inputDailyRate.value) || 0;
+            const daysWorked = parseInt(inputDaysWorked.value) || 0;
+            const hasAssiduity = inputHasAssiduity.checked;
+
+            const proportionalBase = dailyRate * daysWorked;
+            const assiduityBonus = hasAssiduity ? (proportionalBase * 0.07) : 0;
+            const totalGross = proportionalBase + assiduityBonus;
+            const vtDiscount = proportionalBase * 0.06;
+            const inssDiscount = calculateINSS(totalGross);
+            const effectiveINSS = totalGross > 0 ? ((inssDiscount / totalGross) * 100).toFixed(2) : "0.00";
+            const netSalary = totalGross - vtDiscount - inssDiscount;
+
+            // --- Meal Voucher (VR) Calculation ---
+            const vrValue = parseFloat(inputVRValue.value) || 0;
+            const vrDays = parseInt(inputVRDays.value) || 0;
+            const totalVR = vrValue * vrDays;
+
+            // --- Update UI ---
+            resProportional.textContent = formatCurrency(proportionalBase);
+            resAssiduity.textContent = formatCurrency(assiduityBonus);
+            resVT.textContent = `- ${formatCurrency(vtDiscount)}`;
+            resINSS.textContent = `- ${formatCurrency(inssDiscount)}`;
+            lblINSSPerc.textContent = `${effectiveINSS}%`;
+            resNetSalary.textContent = formatCurrency(netSalary);
+            
+            // Update VR UI
+            resVRTotal.textContent = formatCurrency(totalVR);
+        }
+
+        // Event Listeners
+        inputBaseSalary.addEventListener('input', updateDailyRateAuto);
+        inputDailyRate.addEventListener('input', calculateAll);
+        inputDaysWorked.addEventListener('input', calculateAll);
+        inputHasAssiduity.addEventListener('change', calculateAll);
+        
+        // Event Listeners for VR inputs
+        inputVRValue.addEventListener('input', calculateAll);
+        inputVRDays.addEventListener('input', calculateAll);
+
+        // Initialize values on page load
+        updateDailyRateAuto();
+    </script>
+</body>
+</html>
