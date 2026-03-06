@@ -138,7 +138,7 @@
         }
 
         .result-row.benefit {
-            color: #3b82f6; /* Blue color to distinguish from salary */
+            color: #3b82f6; 
             font-weight: 500;
             margin-top: 8px;
             padding-top: 8px;
@@ -152,6 +152,21 @@
             font-size: 20px;
             font-weight: 700;
             color: #10b981;
+        }
+
+        /* Footnote styling */
+        .footnote {
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid #f3f4f6;
+            font-size: 12px;
+            color: #6b7280;
+            line-height: 1.5;
+            text-align: justify;
+        }
+        
+        .footnote strong {
+            color: #4b5563;
         }
     </style>
 </head>
@@ -221,6 +236,10 @@
                 <span id="resVRTotal">R$ 0,00</span>
             </div>
         </div>
+
+        <div class="footnote">
+            <strong>* Cálculo do INSS (2026):</strong> O desconto é progressivo, aplicado em fatias do salário bruto: 7,5% sobre a parcela até R$ 1.621,00; 9% sobre a diferença até R$ 2.902,84; 12% sobre a diferença até R$ 4.354,27; e 14% sobre o que sobrar até o teto de R$ 8.475,55. A porcentagem exibida na legenda reflete a sua alíquota efetiva.
+        </div>
     </div>
 
     <script>
@@ -248,21 +267,30 @@
             return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         }
 
-        // Calculates the progressive INSS tax
+        // Calculates the progressive INSS tax based on the provided 2026 brackets
         function calculateINSS(grossAmount) {
             let inss = 0;
+            
+            // 1st Bracket: Up to R$ 1.621,00 (7.5%)
             if (grossAmount > 0) {
-                inss += Math.max(0, Math.min(grossAmount, 1412) * 0.075);
+                inss += Math.max(0, Math.min(grossAmount, 1621.00) * 0.075);
             }
-            if (grossAmount > 1412) {
-                inss += Math.max(0, Math.min(grossAmount - 1412, 1254.68) * 0.09);
+            
+            // 2nd Bracket: R$ 1.621,01 to R$ 2.902,84 (9%) - Difference: 1281.84
+            if (grossAmount > 1621.00) {
+                inss += Math.max(0, Math.min(grossAmount - 1621.00, 1281.84) * 0.09);
             }
-            if (grossAmount > 2666.68) {
-                inss += Math.max(0, Math.min(grossAmount - 2666.68, 1333.35) * 0.12);
+            
+            // 3rd Bracket: R$ 2.902,85 to R$ 4.354,27 (12%) - Difference: 1451.43
+            if (grossAmount > 2902.84) {
+                inss += Math.max(0, Math.min(grossAmount - 2902.84, 1451.43) * 0.12);
             }
-            if (grossAmount > 4000.03) {
-                inss += Math.max(0, Math.min(grossAmount - 4000.03, 3785.99) * 0.14);
+            
+            // 4th Bracket: R$ 4.354,28 to R$ 8.475,55 (14%) - Difference: 4121.28
+            if (grossAmount > 4354.27) {
+                inss += Math.max(0, Math.min(grossAmount - 4354.27, 4121.28) * 0.14);
             }
+            
             return inss;
         }
 
@@ -285,7 +313,10 @@
             const totalGross = proportionalBase + assiduityBonus;
             const vtDiscount = proportionalBase * 0.06;
             const inssDiscount = calculateINSS(totalGross);
+            
+            // Calculate effective INSS percentage
             const effectiveINSS = totalGross > 0 ? ((inssDiscount / totalGross) * 100).toFixed(2) : "0.00";
+            
             const netSalary = totalGross - vtDiscount - inssDiscount;
 
             // --- Meal Voucher (VR) Calculation ---
