@@ -3,351 +3,695 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Salário e Benefícios</title>
+    <title>Dashboard CEE</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
     <style>
-        /* CSS Reset and base styles */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        :root {
+            --bg: #f0f2f5;
+            --white: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --accent: #2563eb;
+            --accent-light: #eff6ff;
+            --green: #10b981;
+            --red: #ef4444;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.04);
+            --shadow-lg: 0 20px 40px rgba(0,0,0,0.08);
+            --radius: 12px;
+            --radius-sm: 8px;
         }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            background-color: #f7f9fc;
-            color: #333333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-primary);
             min-height: 100vh;
-            padding: 20px;
+            padding: 16px;
         }
 
-        /* Main container styling - Minimalist, flat */
+        /* =====================
+           NAVIGATION
+        ===================== */
+        .nav-container {
+            max-width: 920px;
+            margin: 0 auto 20px auto;
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 6px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            gap: 6px;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 11px 16px;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .tab-button:hover { background: var(--bg); color: var(--text-primary); }
+        .tab-button.active { background: var(--accent); color: #fff; }
+
+        /* =====================
+           TAB CONTENT
+        ===================== */
+        .tab-content { display: none; max-width: 920px; margin: 0 auto; }
+        .tab-content.active {
+            display: block;
+            animation: fadeUp 0.25s ease;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* =====================
+           CALCULATOR
+        ===================== */
         .calculator-container {
-            background-color: #ffffff;
-            width: 100%;
-            max-width: 420px;
-            padding: 32px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            background: var(--white);
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 28px 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
         }
 
-        h2 {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 24px;
+        .calculator-container h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 22px;
+            color: var(--text-primary);
             text-align: center;
-            color: #111827;
         }
 
-        h3 {
-            font-size: 16px;
+        .section-title {
+            font-size: 13px;
             font-weight: 600;
-            margin: 24px 0 16px 0;
-            color: #374151;
-            border-bottom: 1px solid #e5e7eb;
+            margin: 20px 0 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            border-bottom: 1px solid var(--border);
             padding-bottom: 8px;
         }
 
-        /* Form groups and inputs */
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        /* Display inputs in a row for related fields */
-        .input-row {
-            display: flex;
-            gap: 12px;
-        }
-
-        .input-row .form-group {
-            flex: 1;
-        }
+        .form-group { margin-bottom: 14px; }
+        .input-row { display: flex; gap: 10px; }
+        .input-row .form-group { flex: 1; min-width: 0; }
 
         label {
             display: block;
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 6px;
-            color: #4b5563;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         input[type="number"] {
             width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            font-size: 16px;
-            color: #1f2937;
-            background-color: #f9fafb;
-            transition: border-color 0.2s ease;
+            padding: 9px 11px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: 'DM Mono', monospace;
+            font-size: 15px;
+            color: var(--text-primary);
+            background: #fafbfc;
+            transition: border-color 0.15s;
         }
 
         input[type="number"]:focus {
             outline: none;
-            border-color: #3b82f6;
-            background-color: #ffffff;
+            border-color: var(--accent);
+            background: var(--white);
         }
 
-        /* Checkbox styling */
         .checkbox-group {
             display: flex;
             align-items: center;
-            margin-bottom: 16px;
-            padding: 12px;
-            background-color: #f9fafb;
-            border-radius: 6px;
-            border: 1px solid #e5e7eb;
+            padding: 10px 12px;
+            background: var(--accent-light);
+            border-radius: var(--radius-sm);
+            border: 1.5px solid #bfdbfe;
+            margin-bottom: 14px;
+            cursor: pointer;
         }
 
-        .checkbox-group input {
-            width: 18px;
-            height: 18px;
-            margin-right: 12px;
+        .checkbox-group input[type="checkbox"] {
+            width: 17px;
+            height: 17px;
+            margin-right: 10px;
+            accent-color: var(--accent);
             cursor: pointer;
         }
 
         .checkbox-group label {
             margin-bottom: 0;
             cursor: pointer;
-            font-weight: 500;
+            color: var(--accent);
+            text-transform: none;
+            letter-spacing: 0;
+            font-size: 14px;
+            font-weight: 600;
         }
 
-        /* Results section */
         .results-section {
-            border-top: 1px solid #e5e7eb;
-            padding-top: 24px;
-            margin-top: 24px;
+            border-top: 1.5px solid var(--border);
+            padding-top: 18px;
+            margin-top: 18px;
         }
 
         .result-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 12px;
+            align-items: center;
+            margin-bottom: 10px;
             font-size: 14px;
-            color: #6b7280;
+            color: var(--text-secondary);
+            gap: 8px;
         }
 
-        .result-row span strong {
-            font-weight: 600;
+        .result-row span:last-child {
+            font-family: 'DM Mono', monospace;
+            font-size: 13px;
+            white-space: nowrap;
         }
 
-        .result-row.discount {
-            color: #ef4444;
+        .result-row.discount span:last-child { color: var(--red); }
+        .result-row.total {
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1.5px dashed var(--border);
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--green);
         }
+        .result-row.total span:last-child { font-size: 17px; }
 
         .result-row.benefit {
-            color: #3b82f6; 
-            font-weight: 500;
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px dashed #e5e7eb;
+            color: var(--accent);
+            font-weight: 600;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #bfdbfe;
         }
 
-        .result-row.total {
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px dashed #e5e7eb;
-            font-size: 20px;
-            font-weight: 700;
-            color: #10b981;
-        }
-
-        /* Footnote styling */
         .footnote {
-            margin-top: 24px;
-            padding-top: 16px;
-            border-top: 1px solid #f3f4f6;
-            font-size: 12px;
-            color: #6b7280;
-            line-height: 1.5;
-            text-align: justify;
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid var(--bg);
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 1.6;
         }
-        
-        .footnote strong {
-            color: #4b5563;
+        .footnote strong { color: var(--text-secondary); }
+
+        /* =====================
+           MAP
+        ===================== */
+        .map-container {
+            background: var(--white);
+            padding: 24px 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+        }
+
+        .map-container h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            color: var(--text-primary);
+            letter-spacing: -0.3px;
+        }
+
+        .cee-building {
+            display: flex;
+            flex-direction: column;
+            border: 2px solid #cbd5e1;
+            border-radius: var(--radius);
+            background: #cbd5e1;
+            overflow: hidden;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            min-height: 420px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .facility-entrance {
+            background: var(--white);
+            color: #475569;
+            text-align: center;
+            padding: 16px;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            position: relative;
+            border-bottom: 2px solid #cbd5e1;
+        }
+
+        .facility-entrance::after {
+            content: "";
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 2px;
+            background: var(--accent);
+            z-index: 1;
+        }
+
+        .sectors-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 2px;
+            flex-grow: 1;
+        }
+
+        .sector {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 24px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            min-height: 130px;
+        }
+
+        .sector:hover { filter: brightness(0.94); transform: scale(0.985); }
+        .sector:active { transform: scale(0.975); }
+
+        .sector h3 {
+            font-size: clamp(24px, 5vw, 40px);
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+
+        .sector p {
+            font-size: clamp(11px, 2.5vw, 14px);
+            font-weight: 600;
+            color: #475569;
+            background: rgba(255,255,255,0.75);
+            padding: 7px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.6);
+        }
+
+        .sector-gh { background-color: #e0f2fe; }
+        .sector-ab { background-color: #dcfce7; }
+        .sector-ef { background-color: #fef9c3; }
+        .sector-cd { background-color: #f3e8ff; }
+
+        /* =====================
+           MODAL
+        ===================== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15,23,42,0.55);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            animation: fadeInModal 0.2s ease;
+        }
+
+        @keyframes fadeInModal {
+            from { opacity: 0; } to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: var(--white);
+            width: 100%;
+            max-width: 720px;
+            border-radius: var(--radius);
+            padding: 24px 20px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1.5px solid var(--border);
+            padding-bottom: 14px;
+        }
+
+        .modal-header h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 26px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.15s;
+            line-height: 1;
+            padding: 2px 6px;
+        }
+        .close-btn:hover { color: var(--red); }
+
+        /* Table Grid inside Modal */
+        .desk-container {
+            background: #f8fafc;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px;
+        }
+
+        .desk-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+            background: #cbd5e1;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 5px;
+        }
+
+        .d-cell {
+            background: var(--white);
+            padding: 8px 4px;
+            text-align: center;
+            border-radius: 4px;
+            font-size: clamp(9px, 2.2vw, 12px);
+            font-weight: 600;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            word-break: break-word;
+            hyphens: auto;
+            line-height: 1.3;
+            min-height: 42px;
+        }
+
+        .d-esteira {
+            background: #64748b;
+            color: #fff;
+            grid-column: span 3;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-size: clamp(9px, 2vw, 11px);
+        }
+
+        .d-empty { background: transparent; }
+        .span-2 { grid-column: span 2; }
+
+        /* =====================
+           RESPONSIVE
+        ===================== */
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+
+            .nav-container { 
+                padding: 5px; 
+                gap: 4px;
+                margin-bottom: 14px;
+            }
+            .tab-button { 
+                padding: 10px 8px; 
+                font-size: 12px; 
+            }
+
+            .calculator-container { 
+                padding: 20px 16px; 
+            }
+            .calculator-container h2 { font-size: 17px; }
+
+            .input-row { 
+                flex-direction: column; 
+                gap: 0; 
+            }
+
+            .map-container { padding: 16px 12px; }
+            .map-container h2 { font-size: 15px; margin-bottom: 14px; }
+
+            .cee-building { min-height: 320px; }
+
+            .sector { padding: 16px 10px; min-height: 100px; }
+            .sector h3 { margin-bottom: 6px; }
+
+            .modal-content { padding: 18px 14px; }
+            .modal-header h3 { font-size: 15px; }
+        }
+
+        @media (max-width: 380px) {
+            .tab-button { font-size: 11px; padding: 9px 6px; }
+            .sector p { padding: 5px 10px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="calculator-container">
-        <h2>Cálculo de Salário</h2>
+    <nav class="nav-container">
+        <button class="tab-button" onclick="switchTab('map', this)">Mapa do CEE</button>
+        <button class="tab-button" onclick="switchTab('calculator', this)">Calculadora de Pagamento</button>
+    </nav>
 
-        <div class="form-group">
-            <label for="baseSalary">Salário Base Bruto Mensal (R$)</label>
-            <input type="number" id="baseSalary" value="2056" step="0.01" min="0">
+    <div id="tab-map" class="tab-content active">
+        <div class="map-container">
+            <h2>Mapa Interno Operacional</h2>
+            <div class="cee-building">
+                <div class="facility-entrance">Entrada Principal</div>
+                <div class="sectors-grid">
+                    <div class="sector sector-gh" onclick="openModal('Setores G / H', 'left')">
+                        <h3>G / H</h3>
+                        <p>Distritos: 327 ao 350</p>
+                    </div>
+                    <div class="sector sector-ab" onclick="openModal('Setores A / B', 'right')">
+                        <h3>A / B</h3>
+                        <p>Distritos: 301 ao 310</p>
+                    </div>
+                    <div class="sector sector-ef" onclick="openModal('Setores E / F', 'left')">
+                        <h3>E / F</h3>
+                        <p>Distritos: 326 ao 336</p>
+                    </div>
+                    <div class="sector sector-cd" onclick="openModal('Setores C / D', 'right')">
+                        <h3>C / D</h3>
+                        <p>Distritos: 311 ao 325</p>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
 
-        <div class="input-row">
+    <div id="tab-calculator" class="tab-content">
+        <div class="calculator-container">
+            <h2>Calculadora de Salário</h2>
             <div class="form-group">
-                <label for="dailyRate">Valor do Dia (R$)</label>
-                <input type="number" id="dailyRate" step="0.01" min="0">
+                <label for="baseSalary">Salário Base Bruto Mensal (R$)</label>
+                <input type="number" id="baseSalary" value="2056" step="0.01" min="0">
             </div>
-            
-            <div class="form-group">
-                <label for="daysWorked">Dias Trabalhados</label>
-                <input type="number" id="daysWorked" value="30" min="1" max="31">
+            <div class="input-row">
+                <div class="form-group">
+                    <label for="dailyRate">Valor do Dia (R$)</label>
+                    <input type="number" id="dailyRate" step="0.01" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="daysWorked">Dias Trabalhados</label>
+                    <input type="number" id="daysWorked" value="30" min="1" max="31">
+                </div>
             </div>
-        </div>
-
-        <div class="checkbox-group">
-            <input type="checkbox" id="hasAssiduity" checked>
-            <label for="hasAssiduity">Incluir Assiduidade (7%)</label>
-        </div>
-
-        <h3>Benefícios</h3>
-        <div class="input-row">
-            <div class="form-group">
-                <label for="vrValue">Valor do VR Diário (R$)</label>
-                <input type="number" id="vrValue" value="27.29" step="0.01" min="0">
+            <div class="checkbox-group" onclick="document.getElementById('hasAssiduity').click()">
+                <input type="checkbox" id="hasAssiduity" checked onclick="event.stopPropagation()">
+                <label for="hasAssiduity">Incluir Assiduidade (7%)</label>
             </div>
-            
-            <div class="form-group">
-                <label for="vrDays">Dias de VR</label>
-                <input type="number" id="vrDays" value="26" min="0" max="31">
+            <h3 class="section-title">Benefícios</h3>
+            <div class="input-row">
+                <div class="form-group">
+                    <label for="vrValue">VR Diário (R$)</label>
+                    <input type="number" id="vrValue" value="27.29" step="0.01" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="vrDays">Dias de VR</label>
+                    <input type="number" id="vrDays" value="26" min="0" max="31">
+                </div>
             </div>
-        </div>
-
-        <div class="results-section">
-            <div class="result-row">
-                <span>Salário Proporcional:</span>
-                <span id="resProportional">R$ 0,00</span>
+            <div class="results-section">
+                <div class="result-row"><span>Salário Proporcional</span><span id="resProportional">R$ 0,00</span></div>
+                <div class="result-row"><span>Assiduidade (+)</span><span id="resAssiduity">R$ 0,00</span></div>
+                <div class="result-row discount"><span>Vale Transporte (6%)</span><span id="resVT">- R$ 0,00</span></div>
+                <div class="result-row discount"><span>INSS (<span id="lblINSSPerc">0.00%</span>)</span><span id="resINSS">- R$ 0,00</span></div>
+                <div class="result-row total"><span>Salário Líquido</span><span id="resNetSalary">R$ 0,00</span></div>
+                <div class="result-row benefit"><span>Total Vale Refeição</span><span id="resVRTotal">R$ 0,00</span></div>
             </div>
-            <div class="result-row">
-                <span>Assiduidade (+):</span>
-                <span id="resAssiduity">R$ 0,00</span>
-            </div>
-            <div class="result-row discount">
-                <span>Vale Transporte (<strong>6%</strong>):</span>
-                <span id="resVT">- R$ 0,00</span>
-            </div>
-            <div class="result-row discount">
-                <span>Desconto INSS (<strong id="lblINSSPerc">0.00%</strong>):</span>
-                <span id="resINSS">- R$ 0,00</span>
-            </div>
-            <div class="result-row total">
-                <span>Salário Líquido:</span>
-                <span id="resNetSalary">R$ 0,00</span>
-            </div>
-            <div class="result-row benefit">
-                <span>Total Vale Refeição:</span>
-                <span id="resVRTotal">R$ 0,00</span>
+            <div class="footnote">
+                <strong>* INSS 2026 (progressivo):</strong> 7,5% até R$1.621 · 9% até R$2.902,84 · 12% até R$4.354,27 · 14% até R$8.475,55. Percentual exibido = alíquota efetiva.
             </div>
         </div>
+    </div>
 
-        <div class="footnote">
-            <strong>* Cálculo do INSS (2026):</strong> O desconto é progressivo, aplicado em fatias do salário bruto: 7,5% sobre a parcela até R$ 1.621,00; 9% sobre a diferença até R$ 2.902,84; 12% sobre a diferença até R$ 4.354,27; e 14% sobre o que sobrar até o teto de R$ 8.475,55. A porcentagem exibida na legenda reflete a sua alíquota efetiva.
+    <div class="modal-overlay" id="tableModal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 id="modalTitle">Mesas do Setor</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modalBody"></div>
         </div>
     </div>
 
     <script>
-        // DOM Elements selection - Salary
+        // Set initial active tab button
+        document.querySelector('.tab-button').classList.add('active');
+
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        // --- CALCULATOR ---
         const inputBaseSalary = document.getElementById('baseSalary');
-        const inputDailyRate = document.getElementById('dailyRate');
+        const inputDailyRate  = document.getElementById('dailyRate');
         const inputDaysWorked = document.getElementById('daysWorked');
         const inputHasAssiduity = document.getElementById('hasAssiduity');
-        
-        // DOM Elements selection - Meal Voucher (VR)
-        const inputVRValue = document.getElementById('vrValue');
-        const inputVRDays = document.getElementById('vrDays');
-        
-        // DOM Elements selection - Results
-        const resProportional = document.getElementById('resProportional');
-        const resAssiduity = document.getElementById('resAssiduity');
-        const resVT = document.getElementById('resVT');
-        const resINSS = document.getElementById('resINSS');
-        const lblINSSPerc = document.getElementById('lblINSSPerc');
-        const resNetSalary = document.getElementById('resNetSalary');
-        const resVRTotal = document.getElementById('resVRTotal');
+        const inputVRValue    = document.getElementById('vrValue');
+        const inputVRDays     = document.getElementById('vrDays');
 
-        // Formats a number to Brazilian Real currency format
-        function formatCurrency(value) {
-            return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        function fmt(v) { return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
+
+        function calcINSS(g) {
+            let t = 0;
+            if (g > 0)       t += Math.min(g, 1621.00) * 0.075;
+            if (g > 1621.00) t += Math.min(g - 1621.00, 1281.84) * 0.09;
+            if (g > 2902.84) t += Math.min(g - 2902.84, 1451.43) * 0.12;
+            if (g > 4354.27) t += Math.min(g - 4354.27, 4121.28) * 0.14;
+            return t;
         }
 
-        // Calculates the progressive INSS tax based on the provided 2026 brackets
-        function calculateINSS(grossAmount) {
-            let inss = 0;
-            
-            // 1st Bracket: Up to R$ 1.621,00 (7.5%)
-            if (grossAmount > 0) {
-                inss += Math.max(0, Math.min(grossAmount, 1621.00) * 0.075);
-            }
-            
-            // 2nd Bracket: R$ 1.621,01 to R$ 2.902,84 (9%) - Difference: 1281.84
-            if (grossAmount > 1621.00) {
-                inss += Math.max(0, Math.min(grossAmount - 1621.00, 1281.84) * 0.09);
-            }
-            
-            // 3rd Bracket: R$ 2.902,85 to R$ 4.354,27 (12%) - Difference: 1451.43
-            if (grossAmount > 2902.84) {
-                inss += Math.max(0, Math.min(grossAmount - 2902.84, 1451.43) * 0.12);
-            }
-            
-            // 4th Bracket: R$ 4.354,28 to R$ 8.475,55 (14%) - Difference: 4121.28
-            if (grossAmount > 4354.27) {
-                inss += Math.max(0, Math.min(grossAmount - 4354.27, 4121.28) * 0.14);
-            }
-            
-            return inss;
-        }
-
-        // Updates the Daily Rate input automatically when Base Salary changes
-        function updateDailyRateAuto() {
-            const baseSalary = parseFloat(inputBaseSalary.value) || 0;
-            inputDailyRate.value = (baseSalary / 30).toFixed(2);
+        function updateDailyRate() {
+            const base = parseFloat(inputBaseSalary.value) || 0;
+            inputDailyRate.value = (base / 30).toFixed(2);
             calculateAll();
         }
 
-        // Main calculation function for both Salary and Benefits
         function calculateAll() {
-            // --- Salary Calculation ---
-            const dailyRate = parseFloat(inputDailyRate.value) || 0;
-            const daysWorked = parseInt(inputDaysWorked.value) || 0;
-            const hasAssiduity = inputHasAssiduity.checked;
+            const daily = parseFloat(inputDailyRate.value) || 0;
+            const days  = parseInt(inputDaysWorked.value) || 0;
+            const prop  = daily * days;
+            const assim = inputHasAssiduity.checked ? prop * 0.07 : 0;
+            const gross = prop + assim;
+            const vt    = prop * 0.06;
+            const inss  = calcINSS(gross);
+            const net   = gross - vt - inss;
+            const vr    = (parseFloat(inputVRValue.value) || 0) * (parseInt(inputVRDays.value) || 0);
+            const effINSS = gross > 0 ? ((inss / gross) * 100).toFixed(2) : '0.00';
 
-            const proportionalBase = dailyRate * daysWorked;
-            const assiduityBonus = hasAssiduity ? (proportionalBase * 0.07) : 0;
-            const totalGross = proportionalBase + assiduityBonus;
-            const vtDiscount = proportionalBase * 0.06;
-            const inssDiscount = calculateINSS(totalGross);
-            
-            // Calculate effective INSS percentage
-            const effectiveINSS = totalGross > 0 ? ((inssDiscount / totalGross) * 100).toFixed(2) : "0.00";
-            
-            const netSalary = totalGross - vtDiscount - inssDiscount;
-
-            // --- Meal Voucher (VR) Calculation ---
-            const vrValue = parseFloat(inputVRValue.value) || 0;
-            const vrDays = parseInt(inputVRDays.value) || 0;
-            const totalVR = vrValue * vrDays;
-
-            // --- Update UI ---
-            resProportional.textContent = formatCurrency(proportionalBase);
-            resAssiduity.textContent = formatCurrency(assiduityBonus);
-            resVT.textContent = `- ${formatCurrency(vtDiscount)}`;
-            resINSS.textContent = `- ${formatCurrency(inssDiscount)}`;
-            lblINSSPerc.textContent = `${effectiveINSS}%`;
-            resNetSalary.textContent = formatCurrency(netSalary);
-            
-            // Update VR UI
-            resVRTotal.textContent = formatCurrency(totalVR);
+            document.getElementById('resProportional').textContent = fmt(prop);
+            document.getElementById('resAssiduity').textContent    = fmt(assim);
+            document.getElementById('resVT').textContent           = `- ${fmt(vt)}`;
+            document.getElementById('resINSS').textContent         = `- ${fmt(inss)}`;
+            document.getElementById('lblINSSPerc').textContent     = `${effINSS}%`;
+            document.getElementById('resNetSalary').textContent    = fmt(net);
+            document.getElementById('resVRTotal').textContent      = fmt(vr);
         }
 
-        // Event Listeners
-        inputBaseSalary.addEventListener('input', updateDailyRateAuto);
+        inputBaseSalary.addEventListener('input', updateDailyRate);
         inputDailyRate.addEventListener('input', calculateAll);
         inputDaysWorked.addEventListener('input', calculateAll);
         inputHasAssiduity.addEventListener('change', calculateAll);
-        
-        // Event Listeners for VR inputs
         inputVRValue.addEventListener('input', calculateAll);
         inputVRDays.addEventListener('input', calculateAll);
+        updateDailyRate();
 
-        // Initialize values on page load
-        updateDailyRateAuto();
+        // --- MODAL ---
+        const modal      = document.getElementById('tableModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBody  = document.getElementById('modalBody');
+
+        const getRightTableHTML = () => `
+            <div class="desk-container">
+                <div class="desk-grid">
+                    <div class="d-cell">Caixa Postal</div>
+                    <div class="d-cell">Mal Endereçado</div>
+                    <div class="d-cell">Recondicionamento</div>
+                    <div class="d-cell">337-351</div>
+                    <div class="d-cell d-esteira">Esteira 1</div>
+                    <div class="d-cell">301-310</div>
+                    <div class="d-cell d-esteira">Esteira 2</div>
+                    <div class="d-cell">326-336</div>
+                    <div class="d-empty span-2"></div>
+                    <div class="d-cell">301 e 399</div>
+                    <div class="d-cell">311-325</div>
+                </div>
+            </div>`;
+
+        const getLeftTableHTML = () => `
+            <div class="desk-container">
+                <div class="desk-grid">
+                    <div class="d-cell">301-310</div>
+                    <div class="d-cell">Recondicionamento</div>
+                    <div class="d-cell">Mal Endereçado</div>
+                    <div class="d-cell">Caixa Postal</div>
+                    <div class="d-cell">337-351</div>
+                    <div class="d-cell d-esteira">Esteira 1</div>
+                    <div class="d-cell">311-325</div>
+                    <div class="d-cell d-esteira">Esteira 2</div>
+                    <div class="d-empty"></div>
+                    <div class="d-cell">326-336</div>
+                    <div class="d-cell">301 e 399</div>
+                    <div class="d-empty"></div>
+                </div>
+            </div>`;
+
+        function openModal(sectorName, side) {
+            modalTitle.textContent = `Mesas: ${sectorName}`;
+            modalBody.innerHTML = side === 'right' ? getRightTableHTML() : getLeftTableHTML();
+            modal.classList.add('active');
+        }
+
+        function closeModal(event) {
+            if (!event || event.target.id === 'tableModal') {
+                modal.classList.remove('active');
+            }
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') modal.classList.remove('active');
+        });
     </script>
 </body>
 </html>
